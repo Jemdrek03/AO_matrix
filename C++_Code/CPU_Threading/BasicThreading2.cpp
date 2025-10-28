@@ -3,8 +3,11 @@
 #include <ctime>
 #include <thread>
 #include <vector>
+#include <algorithm>
+
 
 #define N 2048
+#define blocksize 16
 #define timeNumber 1
 uint64_t nanos(){
     struct timespec start;
@@ -19,17 +22,19 @@ alignas(64) float C[N][N];
 
 
 // ONLY for square matrices for now!!!
-void threading(int rowNumber)
+void threading(int rowNumber, int rowNumber2)
 {
-    for(int x = 0; x < N; x++)
-    {
-        float acc = 0;
-        for(int k = 0; k < N; k++)
-        {
-            acc += A[rowNumber][k] * B[k][x];
+    rowNumber2 = std::min(rowNumber2,N); // So it doesnt leave the N sized matrix
+    for(int y = rowNumber; y < rowNumber2; y++) {
+        for (int x = 0; x < N; x++) {
+            float acc = 0;
+            for (int k = 0; k < N; k++) {
+                acc += A[y][k] * B[k][x];
+            }
+            C[y][x] = acc;
         }
-        C[rowNumber][x] = acc;
     }
+
 }
 
 
@@ -50,8 +55,9 @@ int main()
 
         // Whole threading logic
         std::vector<std::thread> th;
-        for (int t = 0; t < N; t++) {
-            th.emplace_back(threading, t);
+        for (int t = 0; t < N; t += blocksize) {
+            int t1 = t + blocksize;
+            th.emplace_back(threading, t, t1);
         }
         for (auto &t: th)
             t.join();
@@ -63,5 +69,6 @@ int main()
         double s = (end - start) * 1e-9;
         std::cout << "GFLOPS " << gflop / s<<std::endl;
     }
+
     return 0;
 }
