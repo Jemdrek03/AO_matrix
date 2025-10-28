@@ -27,7 +27,7 @@ int main() {
 
     const int BY=32, BX=32, BK=32;
 
-    std::atomic_thread_fence(std::memory_order_seq_cst);
+    //std::atomic_thread_fence(std::memory_order_seq_cst);
     uint64_t start = nanos();
 
     for (int by=0; by<N; by+=BY)
@@ -41,7 +41,7 @@ int main() {
                     C[y][x] = acc;
                 }
 
-    std::atomic_thread_fence(std::memory_order_seq_cst);
+    //std::atomic_thread_fence(std::memory_order_seq_cst);
     uint64_t end = nanos();
 
     double seconds = (end-start) * 1e-9;
