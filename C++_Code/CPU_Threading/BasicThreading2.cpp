@@ -9,6 +9,8 @@
 #define N 2048
 #define blocksize 16
 #define timeNumber 1
+
+
 uint64_t nanos(){
     struct timespec start;
     clock_gettime(CLOCK_MONOTONIC, &start);
