@@ -1,13 +1,15 @@
 #include <cstdint>
 #include <iostream>
 #include <ctime>
+#include <chrono>
 
 #define N 2048
 
-uint64_t nanos(){
-    struct timespec start;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    return (uint64_t)start.tv_sec*1000000000 + (uint64_t)start.tv_nsec;
+uint64_t nanos() {
+    auto now = std::chrono::steady_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(
+            now.time_since_epoch()
+    ).count();
 }
 
 alignas(64) float A[N][N];

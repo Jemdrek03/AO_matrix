@@ -3,14 +3,16 @@
 #include <ctime>
 #include <cassert>
 #include <atomic>
+#include <chrono>
 
 #define N 2048
 static float A[N][N], B[N][N], C[N][N], BT[N][N];
 
-uint64_t nanos(){
-    timespec t{};
-    clock_gettime(CLOCK_MONOTONIC, &t);
-    return (uint64_t)t.tv_sec*1000000000ull + (uint64_t)t.tv_nsec;
+uint64_t nanos() {
+    auto now = std::chrono::steady_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(
+            now.time_since_epoch()
+    ).count();
 }
 
 int main() {
