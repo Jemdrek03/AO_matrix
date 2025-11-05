@@ -5,6 +5,8 @@
 #include <chrono>
 
 #define N 2048
+#define timeNumber 10.0
+#define BLOCK 32
 
 uint64_t nanos() {
     auto now = std::chrono::steady_clock::now();
@@ -17,33 +19,36 @@ float B[N][N];
 float C[N][N];
 
 
-#define BLOCK 32
+
 int main()
 {
+    uint64_t startone = nanos();
     assert(N%BLOCK == 0);
+    double gflop = (N * N * 2.0 * N) * 1e-9;
+    double sumTime = 0.0;
 
-    uint64_t start = nanos();
-    for(int by = 0; by < N;by += BLOCK){
-        for(int bx = 0; bx < N; bx += BLOCK){
-
-
-            for(int y = by; y < by + BLOCK;y++) {
-                for (int x = bx; x < bx + BLOCK; x++) {
-                    float acc = 0;
-                    for (int k = 0; k < N; k++) {
-                        acc += A[y][k] * B[k][x];
+    for( int t = 0; t < timeNumber; t++) {
+        uint64_t start = nanos();
+        for (int by = 0; by < N; by += BLOCK) {
+            for (int bx = 0; bx < N; bx += BLOCK) {
+                for (int y = by; y < by + BLOCK; y++) {
+                    for (int x = bx; x < bx + BLOCK; x++) {
+                        float acc = 0;
+                        for (int k = 0; k < N; k++) {
+                            acc += A[y][k] * B[k][x];
+                        }
+                        C[y][x] = acc;
                     }
-                    C[y][x] = acc;
                 }
             }
-
-
-
         }
+        uint64_t end = nanos();
+        double s = (end - start) * 1e-9;
+        sumTime += s;
     }
-    uint64_t end = nanos();
-    double gflop = (N*N*2.0*N)*1e-9;
-    double s = (end-start)*1e-9;
-    std::cout<<"FLOPS "<<gflop/s;
+    uint64_t endone = nanos();
+    //std::cout << " Time " << (endone - startone) * 1e-9 << " seconds" <<std::endl;
+    std::cout << " Average latency " << (sumTime / timeNumber)<< " seconds " <<std::endl;
+    std::cout << " Average GFLOPS " << gflop / (sumTime / timeNumber)<<std::endl;
     return 0;
 }

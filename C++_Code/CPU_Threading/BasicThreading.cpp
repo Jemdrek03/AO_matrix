@@ -6,8 +6,8 @@
 #include <chrono>
 
 
-#define N 2048
-#define timeNumber 1
+#define N 1024
+#define timeNumber 10.0
 
 
 
@@ -41,6 +41,9 @@ void threading(int rowNumber)
 
 int main()
 {
+    uint64_t startone = nanos();
+    double gflop = (N * N * 2.0 * N) * 1e-9;
+    double sumTime = 0.0;
 
     // Matrix initialization
     for (int y=0; y<N; ++y)
@@ -53,7 +56,6 @@ int main()
         // Start to count the time needed
         uint64_t start = nanos();
 
-
         // Whole threading logic
         std::vector<std::thread> th;
         for (int t = 0; t < N; t++) {
@@ -65,9 +67,13 @@ int main()
 
         // Finalize time counting
         uint64_t end = nanos();
-        double gflop = (N * N * 2.0 * N) * 1e-9;
         double s = (end - start) * 1e-9;
-        std::cout << "GFLOPS " << gflop / s<<std::endl;
+        sumTime += s;
     }
+
+    uint64_t endone = nanos();
+    //std::cout << " Time " << (endone - startone) * 1e-9 << " seconds" <<std::endl;
+    std::cout << " Average latency " << (sumTime / timeNumber)<< " seconds " <<std::endl;
+    std::cout << " Average GFLOPS " << gflop / (sumTime / timeNumber)<<std::endl;
     return 0;
 }

@@ -3,7 +3,8 @@
 #include <ctime>
 #include <chrono>
 
-#define N 2048
+#define N 1024
+#define timeNumber 10.0
 
 uint64_t nanos() {
     auto now = std::chrono::steady_clock::now();
@@ -18,6 +19,10 @@ alignas(64) float C[N][N];
 
 int main()
 {
+    uint64_t startone = nanos();
+
+    double gflop = (N * N * 2.0 * N) * 1e-9;
+    double sumTime = 0.0;
 
     // Matrix initialization
     for (int y=0; y<N; ++y)
@@ -26,19 +31,25 @@ int main()
             B[y][x] = (y - x) * 0.002f;
         }
 
-    uint64_t start = nanos();
-    for(int y = 0; y < N;y++){
-        for(int x = 0; x < N; x++){
-            float acc = 0;
-            for(int k = 0; k < N; k++){
-                acc += A[y][k] * B[k][x];
+
+    for(int t = 0; t < timeNumber; t++) {
+        uint64_t start = nanos();
+        for (int y = 0; y < N; y++) {
+            for (int x = 0; x < N; x++) {
+                float acc = 0;
+                for (int k = 0; k < N; k++) {
+                    acc += A[y][k] * B[k][x];
+                }
+                C[y][x] = acc;
             }
-            C[y][x] = acc;
         }
+        uint64_t end = nanos();
+        double s = (end - start) * 1e-9;
+        sumTime += s;
     }
-    uint64_t end = nanos();
-    double gflop = (N*N*2.0*N)*1e-9;
-    double s = (end-start)*1e-9;
-    std::cout<<"GFLOPS "<<gflop/s;
+    uint64_t endone = nanos();
+    //std::cout << " Time " << (endone - startone) * 1e-9 << " seconds" <<std::endl;
+    std::cout << " Average latency " << (sumTime / timeNumber)<< " seconds " <<std::endl;
+    std::cout << " Average GFLOPS " << gflop / (sumTime / timeNumber)<<std::endl;
     return 0;
 }
