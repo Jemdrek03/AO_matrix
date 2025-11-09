@@ -11,8 +11,8 @@ find_package(CUDAToolkit REQUIRED)
 add_executable(GPU
         #GPU_Threading.cpp
         #CUDA_Version1.cu
-        CUDA_Version2.cu
-        #CUDA_Version3.cu
+        #CUDA_Version2.cu
+        CUDA_Version3.cu
         #CUDA_testing_CUBLAs.cu
 
 )
