@@ -4,6 +4,6 @@ project(CPU_Threading)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(CPU_Threading
-        #BasicThreading.cpp
-        BasicThreading2.cpp
+        BasicThreading.cpp
+        #BasicThreading2.cpp
 )
